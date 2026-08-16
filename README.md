@@ -288,15 +288,15 @@ vault-guard/
 ├── .env / .env.example
 ├── .gitignore
 ├── api/
-│   ├── Dockerfile           # installs Hadolint + Trivy, runs as non-root
+│   ├── Dockerfile           
 │   ├── requirements.txt
-│   ├── main.py               # FastAPI app — /health and /scan
-│   ├── database.py           # SQLAlchemy engine/session
-│   ├── models.py              # Client, ScanResult
-│   ├── schemas.py             # Pydantic request/response models
-│   ├── scanners.py            # subprocess wrappers around Hadolint/Trivy
-│   ├── policy.py               # pass/fail decision logic
-│   └── notifier.py             # Discord webhook alerts
+│   ├── main.py               
+│   ├── database.py           
+│   ├── models.py             
+│   ├── schemas.py             
+│   ├── scanners.py           
+│   ├── policy.py              
+│   └── notifier.py            
 ├── templates/
 │   └── github-actions-workflow.yml   # drop-in workflow for any repo
 └── docs/
