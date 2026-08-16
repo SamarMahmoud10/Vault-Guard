@@ -1,0 +1,65 @@
+name: Vault-Guard Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  vault-guard-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect dependency file
+        id: deps
+        run: |
+          if [ -f "requirements.txt" ]; then
+            echo "file=requirements.txt" >> "$GITHUB_OUTPUT"
+          elif [ -f "package.json" ]; then
+            echo "file=package.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "file=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Vault-Guard Scan
+        env:
+          VAULT_GUARD_URL: ${{ secrets.VAULT_GUARD_URL }}
+          VAULT_GUARD_API_KEY: ${{ secrets.VAULT_GUARD_API_KEY }}
+          DEP_FILE: ${{ steps.deps.outputs.file }}
+        run: |
+          COMMIT_SHA="${{ github.sha }}"
+          REPO_NAME="${{ github.repository }}"
+
+          # jq --rawfile safely embeds raw file content as a JSON string
+          # (handles quotes/newlines correctly — no manual escaping bugs)
+          if [ -n "$DEP_FILE" ]; then
+            PAYLOAD=$(jq -n \
+              --arg repo "$REPO_NAME" \
+              --arg sha "$COMMIT_SHA" \
+              --rawfile dockerfile Dockerfile \
+              --arg depname "$DEP_FILE" \
+              --rawfile depcontent "$DEP_FILE" \
+              '{repo_name: $repo, commit_sha: $sha, dockerfile_content: $dockerfile,
+                dependency_file_name: $depname, dependency_file_content: $depcontent}')
+          else
+            PAYLOAD=$(jq -n \
+              --arg repo "$REPO_NAME" \
+              --arg sha "$COMMIT_SHA" \
+              --rawfile dockerfile Dockerfile \
+              '{repo_name: $repo, commit_sha: $sha, dockerfile_content: $dockerfile}')
+          fi
+
+          RESPONSE=$(curl -s -X POST "$VAULT_GUARD_URL/scan" \
+            -H "X-API-Key: $VAULT_GUARD_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          echo "$RESPONSE" | jq .
+
+          STATUS=$(echo "$RESPONSE" | jq -r '.status')
+
+          if [ "$STATUS" != "pass" ]; then
+            echo "::error::Vault-Guard scan failed. Check the violations above."
+            exit 1
+          fi
