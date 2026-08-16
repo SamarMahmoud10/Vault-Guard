@@ -1,4 +1,4 @@
-.env
+/home/dell/Vault-Gaurd/Vault-Guard/.env
 __pycache__/
 *.pyc
 .venv/
