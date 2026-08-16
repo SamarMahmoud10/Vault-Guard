@@ -126,12 +126,11 @@ GitHub Actions Workflow ──HTTPS + API Key──► Caddy (Reverse Proxy / TL
 ### Prerequisites
 
 - Docker & Docker Compose
-- ~2GB of free RAM for the containers (Trivy's vulnerability DB is a few hundred MB)
 
 ### Installation
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/SamarMahmoud10/Vault-Guard
 cd vault-guard
 cp .env.example .env
 ```
