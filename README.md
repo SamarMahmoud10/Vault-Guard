@@ -131,7 +131,7 @@ GitHub Actions Workflow ──HTTPS + API Key──► Caddy (Reverse Proxy / TL
 
 ```bash
 git clone https://github.com/SamarMahmoud10/Vault-Guard
-cd vault-guard
+cd Vault-Guard
 cp .env.example .env
 ```
 
@@ -146,13 +146,13 @@ First build takes a few minutes — it downloads the Hadolint/Trivy binaries and
 ### Verify it's running
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost/health
 # {"status":"ok"}
 ```
 
 Open the interactive API docs in your browser:
 ```
-http://localhost:8000/docs
+http://localhost/docs
 ```
 
 ---
@@ -162,7 +162,7 @@ http://localhost:8000/docs
 ### Scanning a Dockerfile — example that **fails**
 
 ```bash
-curl -X POST http://localhost:8000/scan \
+curl -X POST http://localhost/scan \
   -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -209,7 +209,7 @@ Merge blocked ❌ — and the same details land in Discord.
 ### Scanning a Dockerfile — example that **passes**
 
 ```bash
-curl -X POST http://localhost:8000/scan \
+curl -X POST http://localhost/scan \
   -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
